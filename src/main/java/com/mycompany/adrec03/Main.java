@@ -15,7 +15,7 @@ public class Main {
     
     public static void main(String[] args) {
         String baseDatos = "coronavirus.db";
-        String nombreXml = "/home/miguel/coronavirus.xml";
+        String nombreXml = "coronavirus.xml";
         new Conexion(baseDatos);
        
         Conexion.desconetarBaseDatos();  
