@@ -29,7 +29,7 @@ public class Main {
             procesadorXml.parse(archivoXml);
             ArrayList<Record> records = recordXml.getRecords();
             for(Record r: records){
-                System.out.println("Date rep: " + r.getDateRep());
+                System.out.println("Datos: " + r.getContinentExp() +"-" + r.getCountriesAndTerritories() +"-"+ r.getCases()+"-"+r.getDeaths());
             }
         } catch (SAXException e){
             System.out.println("Error al leer el XML");
