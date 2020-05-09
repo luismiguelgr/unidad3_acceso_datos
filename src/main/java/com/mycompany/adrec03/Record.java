@@ -7,15 +7,15 @@ package com.mycompany.adrec03;
 public class Record {
     
     private String dateRep;
-    private int day;
-    private int month;
-    private int year;
-    private int cases;
-    private int deaths;
+    private String day;
+    private String month;
+    private String year;
+    private String cases;
+    private String deaths;
     private String countriesAndTerritories;
     private String geoId;
     private String countryterritoryCode;
-    private int popData2018;
+    private String popData2018;
     private String continentExp;
 
     public String getDateRep() {
@@ -26,43 +26,43 @@ public class Record {
         this.dateRep = dateRep;
     }
 
-    public int getDay() {
+    public String getDay() {
         return day;
     }
 
-    public void setDay(int day) {
+    public void setDay(String day) {
         this.day = day;
     }
 
-    public int getMonth() {
+    public String getMonth() {
         return month;
     }
 
-    public void setMonth(int month) {
+    public void setMonth(String month) {
         this.month = month;
     }
 
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(String year) {
         this.year = year;
     }
 
-    public int getCases() {
+    public String getCases() {
         return cases;
     }
 
-    public void setCases(int cases) {
+    public void setCases(String cases) {
         this.cases = cases;
     }
 
-    public int getDeaths() {
+    public String getDeaths() {
         return deaths;
     }
 
-    public void setDeaths(int deaths) {
+    public void setDeaths(String deaths) {
         this.deaths = deaths;
     }
 
@@ -90,11 +90,11 @@ public class Record {
         this.countryterritoryCode = countryterritoryCode;
     }
 
-    public int getPopData2018() {
+    public String getPopData2018() {
         return popData2018;
     }
 
-    public void setPopData2018(int popData2018) {
+    public void setPopData2018(String popData2018) {
         this.popData2018 = popData2018;
     }
 

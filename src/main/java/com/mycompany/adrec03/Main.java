@@ -1,11 +1,5 @@
 package com.mycompany.adrec03;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -18,23 +12,8 @@ public class Main {
         String nombreXml = "coronavirus.xml";
         new Conexion(baseDatos);
        
-        Conexion.desconetarBaseDatos();  
-    
-        XMLReader procesadorXml = null;
-        try{
-            procesadorXml = XMLReaderFactory.createXMLReader();
-            Recordxml recordXml = new Recordxml();
-            procesadorXml.setContentHandler(recordXml);
-            InputSource archivoXml = new InputSource(nombreXml);
-            procesadorXml.parse(archivoXml);
-            ArrayList<Record> records = recordXml.getRecords();
-            for(Record r: records){
-                System.out.println("Datos: " + r.getContinentExp() +"-" + r.getCountriesAndTerritories() +"-"+ r.getCases()+"-"+r.getDeaths());
-            }
-        } catch (SAXException e){
-            System.out.println("Error al leer el XML");
-        } catch (IOException e){
-            System.out.println("Error al leer el archivo XML");
-        }
+        Conexion.procesarXml(nombreXml);       
+        
+        Conexion.desconetarBaseDatos();
     }       
 }
