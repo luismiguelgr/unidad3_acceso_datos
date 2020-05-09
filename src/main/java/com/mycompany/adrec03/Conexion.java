@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -103,6 +104,47 @@ public class Conexion {
         }
     }
     
+    public static void obtenerPaisesPorNumCasos(int numCasos){
+        ResultSet rs = null;
+        try{
+            String sql = "SELECT * FROM record WHERE cases > ? GROUP BY countriesAndTerritories ORDER BY cases;";
+            PreparedStatement pstmt = conexion.prepareStatement(sql);
+            
+            pstmt.setInt(1, numCasos);
+            rs = pstmt.executeQuery();     
+            if(rs.next() == false){
+                System.out.println("No se han encontrado paises");
+            }else{
+                while(rs.next()){
+                System.out.println("Pais: "+rs.getString("countriesAndTerritories") + " - Casos: " + rs.getString("cases"));
+                }
+            }            
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+     public static void obtenerMayorNumMuertesPorPais(){
+        ResultSet rs = null;
+        try{
+            String sql = "SELECT MAX(deaths) AS deaths, countriesAndTerritories, day FROM record GROUP BY countriesAndTerritories ORDER BY deaths;";
+            Statement stmt = conexion.createStatement();
+          
+            rs = stmt.executeQuery(sql);     
+            if(rs.next() == false){
+                System.out.println("No se han encontrado paises");
+            }else{
+                while(rs.next()){
+                    System.out.println("Pais: "+rs.getString("countriesAndTerritories") + " - Muertes: " + rs.getInt("deaths") + " - Día: " + rs.getInt("day"));
+                }
+            }            
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
     public static void procesarXml(String nombreXml){
          XMLReader procesadorXml = null;
         try{
@@ -124,6 +166,26 @@ public class Conexion {
         } catch (IOException e){
             System.out.println("Error al leer el archivo XML");
         }
+    }
+    
+    public static boolean contieneDatos(){
+        boolean contiene = false;
+        ResultSet rs = null;
+        try{
+            String sql = "SELECT * FROM record;";
+            Statement stmt = conexion.createStatement();
+          
+            rs = stmt.executeQuery(sql);     
+            if(rs.next() == false){
+                contiene = false;
+            }else{
+                contiene = true;
+            }            
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return contiene;
     }
     /*
      public static void crearBaseDatos(String nombreBaseDatos){
