@@ -22,12 +22,11 @@ public class Conexion {
     private String nombre;
     
     public Conexion(String nombre) {
-         String baseDatos = "jdbc:sqlite:/home/miguel/" + nombre;
+         String baseDatos = "jdbc:sqlite:/home/" + nombre;
         
         try{
             conexion = DriverManager.getConnection(baseDatos);
             if(conexion != null){
-                //DatabaseMetaData meta = connection.getMetaData();
                 crearTabla();
                 System.out.println("La base de datos fue creada");
             }
@@ -187,28 +186,5 @@ public class Conexion {
         }
         return contiene;
     }
-    /*
-     public static void crearBaseDatos(String nombreBaseDatos){
-
-        String directorio = "/home/miguel/" + nombreBaseDatos;
-        String url = "jdbc:sqlite:"+directorio;
-
-        File ficheroBaseDatos = new File(directorio);
-        if (!ficheroBaseDatos.exists()) {
-            
-            
-            System.out.println("Base de datos no existe.");
-        }
-              
-        try (Connection conn = DriverManager.getConnection(url)) {
-            if (conn != null) {
-                String schema = conn.getSchema();
-                System.out.println("Prueba");
-                System.out.println(schema);
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }*/
+   
 }

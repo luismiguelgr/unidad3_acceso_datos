@@ -1,6 +1,5 @@
 package com.mycompany.adrec03;
 
-import java.sql.ResultSet;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
@@ -54,7 +53,7 @@ public class Main {
                         break;
                     case 3:
                         Conexion.desconetarBaseDatos();
-                        System.out.println("Saindo...");
+                        System.out.println("Saliendo...");
                         salir=true;
                         break;
                 }
