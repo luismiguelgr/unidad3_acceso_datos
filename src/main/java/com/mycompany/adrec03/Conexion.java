@@ -22,7 +22,8 @@ public class Conexion {
     private String nombre;
     
     public Conexion(String nombre) {
-         String baseDatos = "jdbc:sqlite:/home/" + nombre;
+        String directorioHome = System.getProperty("user.home");
+         String baseDatos = "jdbc:sqlite:"+directorioHome+"/" + nombre;
         
         try{
             conexion = DriverManager.getConnection(baseDatos);
@@ -50,23 +51,22 @@ public class Conexion {
       
     private static void crearTabla(){
       try{
-          String sql = "CREATE TABLE IF NOT EXISTS record (\n" +
-                            "id integer PRIMARY KEY,\n"+
-                            "dateRep text ,\n"+
-                            "day integer ,\n"+
-                            "month integer ,\n"+
-                            "year integer ,\n"+
+          String sqlCountries = "CREATE TABLE IF NOT EXISTS countries (\n" +
+                            "geo_id integer PRIMARY KEY,\n"+
+                            "country_territory_code text ,\n"+
+                            "name text ,\n"+
+                            "pop_data_2018 integer ,\n"+
+                            "continent_exp text);";
+          
+          String sqlDeaths = "CREATE TABLE IF NOT EXISTS cases_and_deaths (\n" +
+                            "date date PRIMARY KEY,\n"+
                             "cases integer ,\n"+
                             "deaths integer ,\n"+
-                            "countriesAndTerritories text,\n"+
-                            "geoId text ,\n"+
-                            "countryterritoryCode text,\n"+
-                            "popData2018 text,\n"+
-                            "continentExp text\n"+
-                            ");";
+                            "geo_id integer);";
 
           Statement stmt = conexion.createStatement();
-          stmt.execute(sql);
+          stmt.execute(sqlCountries);
+          stmt.execute(sqlDeaths);
           System.out.println("Tabla creada.");
       }
       catch(SQLException e){
