@@ -54,7 +54,7 @@ public class Conexion {
           String sqlCountries = "CREATE TABLE IF NOT EXISTS countries (\n" +
                             "geo_id integer PRIMARY KEY,\n"+
                             "country_territory_code text ,\n"+
-                            "name text ,\n"+
+                            "countries_and_territories text ,\n"+
                             "pop_data_2018 integer ,\n"+
                             "continent_exp text);";
           
@@ -75,28 +75,32 @@ public class Conexion {
         
     }
     
-    public static void insertarValores(String tabla, String dateRep, int day, int month,
+    public static void insertarValores(String dateRep, int day, int month,
                                         int year, int cases, int deaths, String countriesAndTerritories,
                                         String geoId, String countryterritoryCode, String popData2018, String  continentExp){
         try{
-            String sql = "INSERT INTO "+tabla+"(dateRep, day, month, year, cases, deaths, countriesAndTerritories, "
-                                             + "geoId, countryterritoryCode, popData2018, continentExp) "
-                            + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement pstmt = conexion.prepareStatement(sql);
-
-            pstmt.setString(1, dateRep);
-            pstmt.setInt(2, day);
-            pstmt.setInt(3, month);
-            pstmt.setInt(4, year);
-            pstmt.setInt(5, cases);
-            pstmt.setInt(6, deaths);
-            pstmt.setString(7, countriesAndTerritories);
-            pstmt.setString(8, geoId);
-            pstmt.setString(9, countryterritoryCode);
-            pstmt.setString(10, popData2018);
-            pstmt.setString(11, continentExp);
+            String sqlCountries = "INSERT INTO countries (geo_id, country_territory_code, name, pop_data_2018, continent_exp) "
+                            + "VALUES(?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conexion.prepareStatement(sqlCountries);
+            pstmt.setString(1, geoId);
+            pstmt.setString(2, countriesAndTerritories);
+            pstmt.setString(3, countriesAndTerritories);
+            pstmt.setString(4, popData2018);
+            pstmt.setString(5, continentExp);
             pstmt.executeUpdate();
-            System.out.println(tabla + " se añadió correctamente.");
+            
+            
+            String sqlDeaths = "INSERT INTO cases_and_deaths (date, cases, deaths, geo_id) "
+                            + "VALUES(?, ?, ?, ?)";
+            PreparedStatement pstmt2 = conexion.prepareStatement(sqlDeaths);
+            
+            
+            pstmt.setInt(6, year);
+            pstmt.setInt(7, cases);
+            pstmt.setInt(8, deaths);
+            pstmt.setString(9, geoId);
+            
+            
         }
         catch(SQLException e){
             System.out.println(e.getMessage());
