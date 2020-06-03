@@ -1,5 +1,6 @@
 package com.mycompany.adrec03;
 
+import java.awt.Cursor;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,23 +52,23 @@ public class Conexion {
       
     private static void crearTabla(){
       try{
-          String sqlCountries = "CREATE TABLE IF NOT EXISTS countries (\n" +
-                            "geo_id integer PRIMARY KEY,\n"+
-                            "country_territory_code text ,\n"+
-                            "countries_and_territories text ,\n"+
-                            "pop_data_2018 integer ,\n"+
-                            "continent_exp text);";
+          String sqlCountries = "CREATE TABLE IF NOT EXISTS countries (\n" +                      
+                            "geo_id varchar(50) PRIMARY KEY,\n"+
+                            "country_territory_code varchar(50) ,\n"+
+                            "countries_and_territories varchar(50) ,\n"+
+                            "pop_data_2018 int ,\n"+
+                            "continent_exp varchar(50));";
           
           String sqlDeaths = "CREATE TABLE IF NOT EXISTS cases_and_deaths (\n" +
-                            "date date PRIMARY KEY,\n"+
-                            "cases integer ,\n"+
-                            "deaths integer ,\n"+
-                            "geo_id integer);";
+                             
+                            "date varchar(50),\n"+
+                            "cases int ,\n"+
+                            "deaths int ,\n"+
+                            "geo_id varchar(50));";
 
           Statement stmt = conexion.createStatement();
           stmt.execute(sqlCountries);
           stmt.execute(sqlDeaths);
-          System.out.println("Tabla creada.");
       }
       catch(SQLException e){
           System.out.println(e.getMessage());
@@ -75,32 +76,68 @@ public class Conexion {
         
     }
     
-    public static void insertarValores(String dateRep, int day, int month,
-                                        int year, int cases, int deaths, String countriesAndTerritories,
-                                        String geoId, String countryterritoryCode, String popData2018, String  continentExp){
+    public static boolean existeCampo(String tabla,  String columna, String campo){
+        boolean contiene = false;
+        ResultSet rs = null;
         try{
-            String sqlCountries = "INSERT INTO countries (geo_id, country_territory_code, name, pop_data_2018, continent_exp) "
-                            + "VALUES(?, ?, ?, ?, ?)";
-            PreparedStatement pstmt = conexion.prepareStatement(sqlCountries);
-            pstmt.setString(1, geoId);
-            pstmt.setString(2, countriesAndTerritories);
-            pstmt.setString(3, countriesAndTerritories);
-            pstmt.setString(4, popData2018);
-            pstmt.setString(5, continentExp);
-            pstmt.executeUpdate();
+            String sql = "SELECT * FROM "+ tabla +" WHERE " + columna + " LIKE ?;";
+            PreparedStatement pstmt = conexion.prepareStatement(sql);
+            pstmt.setString(1, campo);
+            rs = pstmt.executeQuery();     
+            if(rs.next() == false){
+                contiene = false;
+            }else{
+                contiene = true;
+            }            
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return contiene;
+    
+    }
+    
+    public static void insertarValores1(String dateRep, int cases, int deaths, String countriesAndTerritories,
+                                        String geoId, String countryterritoryCode, String popData2018, String  continentExp){
+        String tablaCountries = "countries";
+        String columnaCountries = "geo_id";
+        try{
             
-            
-            String sqlDeaths = "INSERT INTO cases_and_deaths (date, cases, deaths, geo_id) "
-                            + "VALUES(?, ?, ?, ?)";
-            PreparedStatement pstmt2 = conexion.prepareStatement(sqlDeaths);
-            
-            
-            pstmt.setInt(6, year);
-            pstmt.setInt(7, cases);
-            pstmt.setInt(8, deaths);
-            pstmt.setString(9, geoId);
-            
-            
+            if(!existeCampo(tablaCountries, columnaCountries, geoId)){                            
+                String sqlCountries = "INSERT INTO countries (geo_id, country_territory_code, countries_and_territories, pop_data_2018, continent_exp) "
+                                + "VALUES(?, ?, ?, ?, ?)";
+                PreparedStatement pstmt = conexion.prepareStatement(sqlCountries);
+                pstmt.setString(1, geoId);
+                pstmt.setString(2, countriesAndTerritories);
+                pstmt.setString(3, countriesAndTerritories);
+                pstmt.setString(4, popData2018);
+                pstmt.setString(5, continentExp);
+                pstmt.executeUpdate();
+            }
+                        
+        }
+        catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    public static void insertarValores2(String dateRep, int cases, int deaths, String countriesAndTerritories,
+                                        String geoId, String countryterritoryCode, String popData2018, String  continentExp){
+        String tablaCases = "cases_and_deaths";
+        String columnaCases = "date";
+        try{
+           //if(!existeCampo(tablaCases,columnaCases, dateRep)){ 
+                String sqlDeaths = "INSERT INTO cases_and_deaths (date, cases, deaths, geo_id) "
+                                + "VALUES(?, ?, ?, ?)";
+                PreparedStatement pstmt2 = conexion.prepareStatement(sqlDeaths);
+
+
+                pstmt2.setString(1, dateRep);
+                pstmt2.setInt(2, cases);
+                pstmt2.setInt(3, deaths);
+                pstmt2.setString(4, geoId);
+                pstmt2.executeUpdate();
+           //}
         }
         catch(SQLException e){
             System.out.println(e.getMessage());
@@ -157,10 +194,11 @@ public class Conexion {
             InputSource archivoXml = new InputSource(nombreXml);
             procesadorXml.parse(archivoXml);
             ArrayList<Record> records = recordXml.getRecords();
-
+            System.out.println("Introduciendo datos en las tablas");
             for(Record r: records){
-               Conexion.insertarValores("record", r.getDateRep(), Integer.parseInt(r.getDay().trim()), Integer.parseInt(r.getMonth().trim()), 
-                                           Integer.parseInt(r.getYear().trim()), Integer.parseInt(r.getCases().trim().trim()), Integer.parseInt(r.getDeaths().trim()), 
+               Conexion.insertarValores1(r.getDateRep(), Integer.parseInt(r.getCases().trim().trim()), Integer.parseInt(r.getDeaths().trim()), 
+                                           r.getCountriesAndTerritories(), r.getGeoId(), r.getCountryterritoryCode(), r.getPopData2018(), r.getContinentExp());
+                Conexion.insertarValores2(r.getDateRep(), Integer.parseInt(r.getCases().trim().trim()), Integer.parseInt(r.getDeaths().trim()), 
                                            r.getCountriesAndTerritories(), r.getGeoId(), r.getCountryterritoryCode(), r.getPopData2018(), r.getContinentExp());
 
             }
@@ -175,7 +213,7 @@ public class Conexion {
         boolean contiene = false;
         ResultSet rs = null;
         try{
-            String sql = "SELECT * FROM record;";
+            String sql = "SELECT * FROM countries;";
             Statement stmt = conexion.createStatement();
           
             rs = stmt.executeQuery(sql);     
