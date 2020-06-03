@@ -126,7 +126,6 @@ public class Conexion {
         String tablaCases = "cases_and_deaths";
         String columnaCases = "date";
         try{
-           //if(!existeCampo(tablaCases,columnaCases, dateRep)){ 
                 String sqlDeaths = "INSERT INTO cases_and_deaths (date, cases, deaths, geo_id) "
                                 + "VALUES(?, ?, ?, ?)";
                 PreparedStatement pstmt2 = conexion.prepareStatement(sqlDeaths);
@@ -137,7 +136,7 @@ public class Conexion {
                 pstmt2.setInt(3, deaths);
                 pstmt2.setString(4, geoId);
                 pstmt2.executeUpdate();
-           //}
+           
         }
         catch(SQLException e){
             System.out.println(e.getMessage());
@@ -147,18 +146,19 @@ public class Conexion {
     public static void obtenerPaisesPorNumCasos(int numCasos){
         ResultSet rs = null;
         try{
-            String sql = "SELECT * FROM record WHERE cases > ? GROUP BY countriesAndTerritories ORDER BY cases;";
-            PreparedStatement pstmt = conexion.prepareStatement(sql);
+            String sql1 = "select c.countries_and_territories, (select MAX(cases) from cases_and_deaths where geo_id = c.geo_id) as casos \n" +
+                            "from countries c INNER JOIN cases_and_deaths cd ON cd.geo_id = c.geo_id \n" +
+                            " group by c.geo_id having casos > " + numCasos+ " order by casos asc";
             
-            pstmt.setInt(1, numCasos);
-            rs = pstmt.executeQuery();     
-            if(rs.next() == false){
-                System.out.println("No se han encontrado paises");
-            }else{
-                while(rs.next()){
-                System.out.println("Pais: "+rs.getString("countriesAndTerritories") + " - Casos: " + rs.getString("cases"));
-                }
-            }            
+            Statement stmt = conexion.createStatement();
+            
+            rs = stmt.executeQuery(sql1);
+               
+                 while(rs.next()){
+                     System.out.println("Pais: "+rs.getString("countries_and_territories") + " - Casos: " + rs.getString("casos"));
+                } 
+               
+                
         }
         catch(SQLException e){
             System.out.println(e.getMessage());
@@ -168,15 +168,15 @@ public class Conexion {
      public static void obtenerMayorNumMuertesPorPais(){
         ResultSet rs = null;
         try{
-            String sql = "SELECT MAX(deaths) AS deaths, countriesAndTerritories, day FROM record GROUP BY countriesAndTerritories ORDER BY deaths;";
+            String sql1 = "SELECT MAX(deaths) AS muertes, * FROM countries c INNER JOIN cases_and_deaths cd ON cd.geo_id = c.geo_id GROUP BY c.geo_id ORDER BY muertes ASC;";
             Statement stmt = conexion.createStatement();
           
-            rs = stmt.executeQuery(sql);     
+            rs = stmt.executeQuery(sql1);     
             if(rs.next() == false){
                 System.out.println("No se han encontrado paises");
             }else{
                 while(rs.next()){
-                    System.out.println("Pais: "+rs.getString("countriesAndTerritories") + " - Muertes: " + rs.getInt("deaths") + " - Día: " + rs.getInt("day"));
+                    System.out.println("Pais: "+rs.getString("countries_and_territories") + " - Muertes: " + rs.getInt("muertes") + " - Fecha: " + rs.getString("date") + " - Día: " + rs.getString("date").substring(0, 2));
                 }
             }            
         }
@@ -194,7 +194,7 @@ public class Conexion {
             InputSource archivoXml = new InputSource(nombreXml);
             procesadorXml.parse(archivoXml);
             ArrayList<Record> records = recordXml.getRecords();
-            System.out.println("Introduciendo datos en las tablas");
+            System.out.println("Introduciendo datos en las tablas...");
             for(Record r: records){
                Conexion.insertarValores1(r.getDateRep(), Integer.parseInt(r.getCases().trim().trim()), Integer.parseInt(r.getDeaths().trim()), 
                                            r.getCountriesAndTerritories(), r.getGeoId(), r.getCountryterritoryCode(), r.getPopData2018(), r.getContinentExp());
